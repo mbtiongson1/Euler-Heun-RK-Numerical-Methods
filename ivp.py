@@ -9,8 +9,10 @@ y0 = 1
 
 #step size and range
 
-m = 5 #change this for m-refinement
-h=0.3/(2**m)
+m = 1 #change this for m-refinement
+#n = 5 #change this for n-refinement
+h=0.3/(2**m) #m-refinement
+#h=(xn/n) #n-refinement
 
 xn=1.500000 #limit of x. By default, starts at 0.
 

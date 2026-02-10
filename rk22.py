@@ -12,15 +12,14 @@ a2 = 2/3
 
 
 rows =[]
-rows.append((0, x, 0, 0, y, 0))
+rows.append((0, x, 0, 0, y))
 
-n = 0
-while x <= xn + 1e-9:# and n < len(y_actual) - 1:
+num_steps = int(round((xn - x0) / h))
+for n in range(1, num_steps + 1):
     k1 = h*f(x, y)
     k2 = h*f(x + (3/4)*h, y+ (3/4)*k1)
     y = y + a1*k1 + a2*k2
-    x = x + h
-    n += 1
+    x = x0 + n * h
     # True percent relative error
     #et = abs((y_actual[n] - y) / y_actual[n] * 100)
     #et_str = f"{et:.5f}"+"%" #just to make it 5 decimal places
