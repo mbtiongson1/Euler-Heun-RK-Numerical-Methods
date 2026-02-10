@@ -3,30 +3,32 @@
 from ivp import f, x0, y0, h, xn#, y_actual
 from utils import print_table
 
-x = x0
+#RK4 method
+
+from ivp import f, x0, y0, h, xn#, y_actual
+from utils import print_table
+
+# Calculate number of steps
+num_steps = int(round((xn - x0) / h))
+
+rows = []
+rows.append((0, x0, 0, 0, 0, 0, y0, 0))
+
 y = y0
-#k1 = h*f(x, y) or h*y'
-#k2 = h*f(x + (1/2)*h, y+ (1/2)*k1)
-#k3 = h*f(x + (1/2)*h, y+ (1/2)*k2)
-#k4 = h*f(x + h, y + k3)
+for n in range(1, num_steps + 1):
+	x = x0 + n * h
+	# Use previous x for k1, k2, k3
+	x_prev = x0 + (n - 1) * h
+	
+	k1 = h*f(x_prev, y)
+	k2 = h*f(x_prev + (1/2)*h, y+ (1/2)*k1)
+	k3 = h*f(x_prev + (1/2)*h, y+ (1/2)*k2)
+	k4 = h*f(x, y + k3)
+	y = y + (1/6)*(k1 + 2*k2 + 2*k3 + k4)
+	rows.append((n, x, k1, k2, k3, k4, y))
 
-
-rows =[]
-rows.append((0, x, 0, 0, 0, 0, y, 0))
-
-n = 0
-while x <= xn + 1e-9:# and n < len(y_actual) - 1:
-    k1 = h*f(x, y)
-    k2 = h*f(x + (1/2)*h, y+ (1/2)*k1)
-    k3 = h*f(x + (1/2)*h, y+ (1/2)*k2)
-    k4 = h*f(x + h, y + k3)
-    y = y + (1/6)*(k1 + 2*k2 + 2*k3 + k4)
-    x = x + h
-    n += 1
-    # True percent relative error
-    #et = abs((y_actual[n] - y) / y_actual[n] * 100)
-    #et_str = f"{et:.5f}"+"%" #just to make it 5 decimal places
-    rows.append((n, x, k1, k2, k3, k4, y))
+print("Runge-Kutta 4th Order Method (RK4)")
+print_table(["n", "x", "k1", "k2", "k3", "k4", "y"], rows)
 
 print("Runge-Kutta 4th Order Method (RK4)")
 print_table(["n", "x", "k1", "k2", "k3", "k4", "y"], rows)
