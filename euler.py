@@ -15,7 +15,7 @@ while x < xn and n < len(y_actual) - 1:
     # True percent relative error
     et = abs((y_actual[n] - y) / y_actual[n] * 100)
     et_str = f"{et:.5f}"+"%" #just to make it 5 decimal places
-    rows.append((n, x, y, et_str))
+    rows.append((n, x, y, y_actual[n], et_str))
 
 print("Euler's Method")
-print_table(["n", "x", "y", "e_t (%)"], rows)
+print_table(["n", "x", "y", "y_actual", "e_t (%)"], rows)
