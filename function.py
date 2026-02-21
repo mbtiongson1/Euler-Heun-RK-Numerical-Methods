@@ -14,7 +14,7 @@ printed (first rows) and the full shapes are displayed.
 from FD import compute_euler, compute_heun, compute_rk22, compute_rk4
 from vandermonde import build_vandermonde, solve_vandermonde
 from lagrange import solve_lagrange
-from ivp import method, p, validate_data_points
+from ivp import method, p, xn, x0, y_actual
 from utils import plot_polynomial, plot_polynomials_compare
 
 
@@ -39,12 +39,16 @@ def main():
 	else:
 		raise ValueError('Unknown method. Choose euler, heun, rk22, or rk4')
 
-	# Validate that there are enough data points for polynomial degree
-	sampled_indices, num_sampled = validate_data_points(len(xs), p)
-	
-	# Sample the data points
-	xs_sampled = [xs[i] for i in sampled_indices]
-	ys_sampled = [ys[i] for i in sampled_indices]
+	# # Validate that there are enough data points for polynomial degree
+	# sampled_indices, num_sampled = validate_data_points(len(xs), p)
+	# xs_sampled = [xs[i] for i in sampled_indices]
+	# ys_sampled = [ys[i] for i in sampled_indices]
+	# Use only the first p+1 data points (enough for degree-p polynomial)
+	xs_sampled, ys_sampled = xs[:p + 1], ys[:p + 1]
+
+	# Compute x coordinates for y_actual reference points
+	actual_spacing = xn / (len(y_actual) - 1)
+	x_actual = [x0 + i * actual_spacing for i in range(len(y_actual))]
 
 	V = build_vandermonde(xs_sampled, p)
 
@@ -110,13 +114,16 @@ def main():
 	print("\n" + "="*60)
 	print("COMPARISON PLOT")
 	print("="*60)
-	plot_polynomials_compare(xs_sampled, ys_sampled, [coeffs, lagrange_coeffs], 
+	plot_polynomials_compare(xs_sampled, ys_sampled, [coeffs, lagrange_coeffs],
 	                          [f"Vandermonde (degree {p})", f"Lagrange (degree {p})"],
-	                          title="Vandermonde vs Lagrange Polynomial Approximation")
+	                          title="Vandermonde vs Lagrange Polynomial Approximation", x_end=xn,
+	                          x_actual=x_actual, y_actual=y_actual)
 	# Plot Vandermonde fit
-	plot_polynomial(xs_sampled, ys_sampled, coeffs, label="Vandermonde Fit", title=f"Vandermonde Polynomial Fit (p={p})")
+	plot_polynomial(xs_sampled, ys_sampled, coeffs, label="Vandermonde Fit", title=f"Vandermonde Polynomial Fit (p={p})", x_end=xn,
+	                x_actual=x_actual, y_actual=y_actual)
 	# Plot Lagrange fit
-	plot_polynomial(xs_sampled, ys_sampled, lagrange_coeffs, label="Lagrange Interpolation", title=f"Lagrange Interpolation (degree (p={p})")
+	plot_polynomial(xs_sampled, ys_sampled, lagrange_coeffs, label="Lagrange Interpolation", title=f"Lagrange Interpolation (degree (p={p})", x_end=xn,
+	                x_actual=x_actual, y_actual=y_actual)
 
 	# Export results to CSV
 	_export_to_csv(xs_sampled, ys_sampled, V, coeffs, lagrange_coeffs)

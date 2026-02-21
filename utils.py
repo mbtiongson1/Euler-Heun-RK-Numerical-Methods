@@ -66,7 +66,7 @@ def _annotate_points(ax, xs_np, ys_np):
                     textcoords='offset points', ha='center', va='bottom', fontsize=8)
 
 
-def plot_polynomial(xs, ys, coeffs, label="Polynomial Fit", title="Polynomial Approximation"):
+def plot_polynomial(xs, ys, coeffs, label="Polynomial Fit", title="Polynomial Approximation", x_end=None, x_actual=None, y_actual=None):
     """Plot the original data points and fitted polynomial curve.
 
     xs: array-like, x-coordinates of data points
@@ -75,6 +75,7 @@ def plot_polynomial(xs, ys, coeffs, label="Polynomial Fit", title="Polynomial Ap
             where polynomial is a_0 + a_1*x + a_2*x^2 + ... + a_p*x^p
     label: label for the curve in the legend
     title: title of the plot
+    x_end: if provided, extend the curve to this x value (e.g. xn)
     """
     try:
         import matplotlib.pyplot as plt
@@ -87,7 +88,8 @@ def plot_polynomial(xs, ys, coeffs, label="Polynomial Fit", title="Polynomial Ap
     coeffs_np = np.array(coeffs, dtype=float)
 
     # Create dense x grid for smooth polynomial curve
-    x_min, x_max = xs_np.min(), xs_np.max()
+    x_min = xs_np.min()
+    x_max = x_end if x_end is not None else xs_np.max()
     x_dense = np.linspace(x_min, x_max, 400)
 
     # Evaluate polynomial at dense points: sum(c_j * x^j)
@@ -100,6 +102,10 @@ def plot_polynomial(xs, ys, coeffs, label="Polynomial Fit", title="Polynomial Ap
 
     ax.scatter(xs_np, ys_np, color='blue', s=50, label='Data Points', zorder=5)
     ax.plot(x_dense, p_dense, color='red', linewidth=1, label=label)
+
+    if x_actual is not None and y_actual is not None:
+        ax.scatter(np.array(x_actual, dtype=float), np.array(y_actual, dtype=float),
+                   color='green', s=60, marker='^', label='Actual', zorder=6)
 
     _annotate_points(ax, xs_np, ys_np)
 
@@ -114,7 +120,7 @@ def plot_polynomial(xs, ys, coeffs, label="Polynomial Fit", title="Polynomial Ap
     plt.show()
 
 
-def plot_polynomials_compare(xs, ys, coeffs_list, labels, title="Polynomial Comparison"):
+def plot_polynomials_compare(xs, ys, coeffs_list, labels, title="Polynomial Comparison", x_end=None, x_actual=None, y_actual=None):
     """Plot multiple fitted polynomials on the same axes for comparison.
 
     xs: array-like, x-coordinates of data points
@@ -122,6 +128,7 @@ def plot_polynomials_compare(xs, ys, coeffs_list, labels, title="Polynomial Comp
     coeffs_list: list of coefficient arrays (each array is a_0..a_p for one fit)
     labels: list of labels for each polynomial curve
     title: title of the plot
+    x_end: if provided, extend curves to this x value (e.g. xn)
     """
     try:
         import matplotlib.pyplot as plt
@@ -133,7 +140,8 @@ def plot_polynomials_compare(xs, ys, coeffs_list, labels, title="Polynomial Comp
     ys_np = np.array(ys, dtype=float)
 
     # Create dense x grid for smooth curves
-    x_min, x_max = xs_np.min(), xs_np.max()
+    x_min = xs_np.min()
+    x_max = x_end if x_end is not None else xs_np.max()
     x_dense = np.linspace(x_min, x_max, 400)
 
     n_polys = len(coeffs_list)
@@ -144,7 +152,11 @@ def plot_polynomials_compare(xs, ys, coeffs_list, labels, title="Polynomial Comp
 
     ax.scatter(xs_np, ys_np, color='black', s=60, label='Data Points', zorder=10)
 
-    colors = ['red', 'green', 'blue', 'orange', 'purple']
+    if x_actual is not None and y_actual is not None:
+        ax.scatter(np.array(x_actual, dtype=float), np.array(y_actual, dtype=float),
+                   color='green', s=60, marker='^', label='Actual', zorder=11)
+
+    colors = ['red', 'blue', 'orange', 'purple', 'brown']
     poly_lines = []
     for i, (coeffs, lbl) in enumerate(zip(coeffs_list, labels)):
         coeffs_np = np.array(coeffs, dtype=float)
