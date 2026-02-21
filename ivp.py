@@ -1,29 +1,30 @@
 import math
 
 def f(x,y):
-    return math.cos(x)-x*math.sin(y)
+    return -1*y**2-math.exp(-x)+x
 
 #initial conditions
 x0 = 0
 y0 = 1
-xn = 1.5 #limit of x. By default, starts at 0.
+xn = 2.0 #limit of x. By default, starts at 0.
 
 #Step Size, Number of steps, refinement parameters
-m = 0 #change this for m-refinement
-h=0.3/(2**m) #m-refinement
+m = 1 #change this for m-refinement
+h=0.5/(2**m) #m-refinement
+# h = 0.015625
 
-n = 9 #change this for n-refinement
-h=(xn/(n-1)) #n-refinement
+#n = 9 #change this for n-refinement
+#h=(xn/(n-1)) #n-refinement
 
 
 # Numerical method and polynomial degree for approximation
 method = 'rk4'  # Choose: euler, heun, rk22, rk4
-p = 4  # Polynomial degree for Vandermonde and Lagrange fits
+p = 8  # Polynomial degree for Vandermonde and Lagrange fits
 
 #actual solution to calculate error
 
 def y_actual_func(x):
-    return x*math.cos(x) + 1
+    return 0 #currently there is no actual function
 
 def generate_actual_solution(x0, xn, h, y_func):
     x = x0

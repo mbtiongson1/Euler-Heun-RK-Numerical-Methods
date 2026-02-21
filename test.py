@@ -74,20 +74,19 @@ def align_results(results1, results2, label1, label2):
 
 # Compute RK4 for both refinement levels
 print("="*60)
-print("RK4 COMPARISON: n=9 vs n=5")
+print("RK4 COMPARISON: m=0 vs m=1")
 print("="*60)
 
-results_n9 = compute_rk4(9)
 results_n5 = compute_rk4(5)
+results_n9 = compute_rk4(9)
 
-print(f"\nRK4 with n=9 (9 points, h={xn/(9-1):.6f}):")
+print(f"\nRK4 with m=0 (5 points, h={xn/(5-1):.6f}):")
+print(f"Points: {len(results_n5)}")
+print(f"\nRK4 with m=1 (9 points, h={xn/(9-1):.6f}):")
 print(f"Points: {len(results_n9)}")
 
-print(f"\nRK4 with n=5 (5 points, h={xn/(5-1):.6f}):")
-print(f"Points: {len(results_n5)}")
-
 # Align and display
-align_results(results_n9, results_n5, "y (n=9)", "y (n=5)")
+align_results(results_n5, results_n9, "y (m=0)", "y (m=1)")
 
 # Show differences where both have values
 print("\n" + "="*60)
@@ -97,11 +96,11 @@ dict9 = {round(x, 10): y for x, y in results_n9}
 dict5 = {round(x, 10): y for x, y in results_n5}
 common_x = sorted(set(dict9.keys()) & set(dict5.keys()))
 
-print(f"{'x':>8} | {'y(n=9)':>15} | {'y(n=5)':>15} | {'|Δy|':>12} | {'Rel. Error %':>12}")
+print(f"{'x':>8} | {'y(m=0)':>15} | {'y(m=1)':>15} | {'|Δy|':>12} | {'Rel. Error %':>12}")
 print("-" * 70)
 for x_val in common_x:
 	y9 = dict9[x_val]
 	y5 = dict5[x_val]
-	diff = abs(y9 - y5)
-	rel_error = abs(diff / y9 * 100) if y9 != 0 else 0
-	print(f"{x_val:>8.4f} | {y9:>15.6f} | {y5:>15.6f} | {diff:>12.6f} | {rel_error:>12.6f}")
+	diff = abs(y5 - y9)
+	rel_error = abs(diff / y5 * 100) if y5 != 0 else 0
+	print(f"{x_val:>8.4f} | {y5:>15.6f} | {y9:>15.6f} | {diff:>12.6f} | {rel_error:>12.6f}")

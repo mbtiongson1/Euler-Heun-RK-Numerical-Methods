@@ -107,7 +107,7 @@ def finite_differences(xs, ys):
 
 
 def main():
-	method = 'rk22' #edit this!!!
+	method = 'rk4' #edit this!!!
 	if len(sys.argv) > 1:
 		method = sys.argv[1].lower()
 
