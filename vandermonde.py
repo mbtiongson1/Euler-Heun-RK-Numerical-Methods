@@ -30,7 +30,7 @@ def solve_vandermonde(V, y):
 if __name__ == '__main__':
 	"""Standalone mode: compute Vandermonde polynomial fit from current IVP config."""
 	from FD import compute_heun, compute_euler, compute_rk22, compute_rk4
-	from ivp import method, p, validate_data_points
+	from ivp import method, p
 
 	# Compute x and y values using the configured method
 	if method == 'euler':
@@ -44,12 +44,8 @@ if __name__ == '__main__':
 	else:
 		raise ValueError(f'Unknown method: {method}')
 
-	# Validate data points for polynomial degree
-	sampled_indices, num_sampled = validate_data_points(len(xs), p)
-	
-	# Sample the data points
-	xs_sampled = [xs[i] for i in sampled_indices]
-	ys_sampled = [ys[i] for i in sampled_indices]
+	# Use only the first p+1 data points (enough for degree-p polynomial)
+	xs_sampled, ys_sampled = xs[:p + 1], ys[:p + 1]
 
 	# Build matrix and solve
 	V = build_vandermonde(xs_sampled, p)

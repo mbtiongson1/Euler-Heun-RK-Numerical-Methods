@@ -52,7 +52,7 @@ def solve_lagrange(xs, ys, p=None):
 
 if __name__ == '__main__':
 	from FD import compute_euler, compute_heun, compute_rk22, compute_rk4
-	from ivp import method, p, validate_data_points
+	from ivp import method, p
 
 	if method == 'euler':
 		xs, ys = compute_euler()
@@ -65,12 +65,8 @@ if __name__ == '__main__':
 	else:
 		raise ValueError('Unknown method. Choose euler, heun, rk22, or rk4')
 
-	# Validate data points for polynomial degree
-	sampled_indices, num_sampled = validate_data_points(len(xs), p)
-	
-	# Sample the data points
-	xs_sampled = [xs[i] for i in sampled_indices]
-	ys_sampled = [ys[i] for i in sampled_indices]
+	# Use only the first p+1 data points (enough for degree-p polynomial)
+	xs_sampled, ys_sampled = xs[:p + 1], ys[:p + 1]
 
 	print(f"Lagrange Interpolation using {method.upper()}, polynomial degree p={p}")
 	print(f"Data points: {len(xs_sampled)}")
