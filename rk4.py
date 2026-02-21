@@ -30,5 +30,5 @@ for n in range(1, num_steps + 1):
 print("Runge-Kutta 4th Order Method (RK4)")
 print_table(["n", "x", "k1", "k2", "k3", "k4", "y"], rows)
 
-print("Runge-Kutta 4th Order Method (RK4)")
-print_table(["n", "x", "k1", "k2", "k3", "k4", "y"], rows)
+#print("Runge-Kutta 4th Order Method (RK4)")
+#print_table(["n", "x", "k1", "k2", "k3", "k4", "y"], rows)

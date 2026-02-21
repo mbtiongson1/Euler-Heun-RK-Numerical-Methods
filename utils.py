@@ -36,6 +36,36 @@ def print_table_csv(headers, rows):
         print(",".join(formatted_row))
 
 
+def _build_poly_latex(coeffs_np):
+    """Return a LaTeX math string for the polynomial defined by coeffs_np (ascending order)."""
+    terms = []
+    for j, c in enumerate(coeffs_np):
+        if j == 0:
+            terms.append(f"{c:.4g}")
+        elif j == 1:
+            terms.append(f"{c:.4g}x")
+        else:
+            terms.append(f"{c:.4g}x^{{{j}}}")
+
+    if not terms:
+        return r"$f(x) = 0$"
+
+    result = terms[0]
+    for t in terms[1:]:
+        if t.startswith('-'):
+            result += " - " + t[1:]
+        else:
+            result += " + " + t
+    return r"$f(x) = " + result + r"$"
+
+
+def _annotate_points(ax, xs_np, ys_np):
+    """Add y-value labels above each scatter point."""
+    for xi, yi in zip(xs_np, ys_np):
+        ax.annotate(f"{yi:.4g}", xy=(xi, yi), xytext=(0, 6),
+                    textcoords='offset points', ha='center', va='bottom', fontsize=8)
+
+
 def plot_polynomial(xs, ys, coeffs, label="Polynomial Fit", title="Polynomial Approximation"):
     """Plot the original data points and fitted polynomial curve.
 
@@ -63,14 +93,24 @@ def plot_polynomial(xs, ys, coeffs, label="Polynomial Fit", title="Polynomial Ap
     # Evaluate polynomial at dense points: sum(c_j * x^j)
     p_dense = np.polyval(coeffs_np[::-1], x_dense)  # polyval expects descending order
 
-    plt.figure(figsize=(10, 6))
-    plt.scatter(xs_np, ys_np, color='blue', s=50, label='Data Points', zorder=5)
-    plt.plot(x_dense, p_dense, color='red', linewidth=2, label=label)
-    plt.xlabel('x')
-    plt.ylabel('y')
-    plt.title(title)
-    plt.legend()
-    plt.grid(True, alpha=0.3)
+    fig, ax = plt.subplots(figsize=(10, 6))
+
+    # y=0 baseline
+    ax.axhline(0, color='black', linewidth=0.8, linestyle='-')
+
+    ax.scatter(xs_np, ys_np, color='blue', s=50, label='Data Points', zorder=5)
+    ax.plot(x_dense, p_dense, color='red', linewidth=1, label=label)
+
+    _annotate_points(ax, xs_np, ys_np)
+
+    ax.set_xlabel('x')
+    ax.set_ylabel('y')
+    ax.set_title(title)
+    ax.text(0.5, -0.1, _build_poly_latex(coeffs_np), transform=ax.transAxes,
+            ha='center', va='top', fontsize=9)
+    ax.legend()
+    ax.grid(True, alpha=0.3)
+    fig.subplots_adjust(bottom=0.18)
     plt.show()
 
 
@@ -96,19 +136,35 @@ def plot_polynomials_compare(xs, ys, coeffs_list, labels, title="Polynomial Comp
     x_min, x_max = xs_np.min(), xs_np.max()
     x_dense = np.linspace(x_min, x_max, 400)
 
-    plt.figure(figsize=(12, 7))
-    plt.scatter(xs_np, ys_np, color='black', s=60, label='Data Points', zorder=10)
+    n_polys = len(coeffs_list)
+    fig, ax = plt.subplots(figsize=(12, 7))
+
+    # y=0 baseline
+    ax.axhline(0, color='black', linewidth=0.8, linestyle='-')
+
+    ax.scatter(xs_np, ys_np, color='black', s=60, label='Data Points', zorder=10)
 
     colors = ['red', 'green', 'blue', 'orange', 'purple']
-    for i, (coeffs, label) in enumerate(zip(coeffs_list, labels)):
+    poly_lines = []
+    for i, (coeffs, lbl) in enumerate(zip(coeffs_list, labels)):
         coeffs_np = np.array(coeffs, dtype=float)
         p_dense = np.polyval(coeffs_np[::-1], x_dense)
         color = colors[i % len(colors)]
-        plt.plot(x_dense, p_dense, color=color, linewidth=2, label=label)
+        ax.plot(x_dense, p_dense, color=color, linewidth=1, label=lbl)
+        poly_lines.append(f"{lbl}:  {_build_poly_latex(coeffs_np)}")
 
-    plt.xlabel('x')
-    plt.ylabel('y')
-    plt.title(title)
-    plt.legend()
-    plt.grid(True, alpha=0.3)
+    _annotate_points(ax, xs_np, ys_np)
+
+    ax.set_xlabel('x')
+    ax.set_ylabel('y')
+    ax.set_title(title)
+    ax.legend()
+    ax.grid(True, alpha=0.3)
+
+    # Show each polynomial's LaTeX expression below the axes
+    poly_text = "\n".join(poly_lines)
+    bottom_margin = 0.08 + 0.05 * n_polys
+    ax.text(0.5, -0.1, poly_text, transform=ax.transAxes,
+            ha='center', va='top', fontsize=9, linespacing=1.6)
+    fig.subplots_adjust(bottom=bottom_margin + 0.1)
     plt.show()
