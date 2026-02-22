@@ -13,6 +13,7 @@ x_actual = [x0 + i * actual_spacing for i in range(n_actual)]
 
 # How many numerical steps fall between each y_actual checkpoint
 actual_stride = round(actual_spacing / h)
+num_steps = int(round((xn - x0) / h))
 
 # ---------------------------
 # Containers (all numerical method steps)
@@ -26,13 +27,13 @@ rk3_y  = [y0]
 rk4_y  = [y0]
 
 # ---------------------------
-# Main loop: runs for all steps up to xn
+# Main loop: runs for a fixed number of steps up to xn
 # ---------------------------
-x = x0
 y_eu = y_he = y_ra = y_rk3 = y_rk = y0
 
-while x < xn:
-    x_next = x + h
+for step in range(num_steps):
+    x = x0 + step * h
+    x_next = x0 + (step + 1) * h
 
     # Euler
     y_eu = y_eu + h * f(x, y_eu)
@@ -59,8 +60,7 @@ while x < xn:
     k4 = h * f(x + h,   y_rk + k3)
     y_rk = y_rk + (1/6)*(k1 + 2*k2 + 2*k3 + k4)
 
-    x = x_next
-    x_vals.append(x)
+    x_vals.append(x_next)
     euler_y.append(y_eu)
     heun_y.append(y_he)
     ral_y.append(y_ra)
@@ -144,10 +144,10 @@ print("CSV file 'output.csv' successfully created!")
 plt.figure(figsize=(10,6))
 methods = [
     ("Euler",   euler_y, 'o-', 'blue'),
-    ("Heun/PC", heun_y,  's-', 'green'),
-    #("RK2.2", ral_y,  '^-', 'orange'),
-    #("RK3",   rk3_y,  'p-', 'purple'),
-    #("RK4",   rk4_y,  'd-', 'red')
+    ("PC", heun_y,  's-', 'green'),
+    # ("RK2.2", ral_y,  '^-', 'orange'),
+    # ("RK3",   rk3_y,  'p-', 'purple'),
+    # ("RK4",   rk4_y,  'd-', 'red')
 ]
 
 for name, y_vals, style, color in methods:
@@ -171,8 +171,8 @@ plt.show()
 plt.figure(figsize=(10,6))
 error_methods = [
     ("Euler",   euler_e, 'o', 'blue'),
-    ("Heun/PC", heun_e,  's', 'green'),
-    # ("RK2.2", ral_e,  '^', 'orange'),
+    ("PC", heun_e,  's', 'green'),
+    #("RK2.2", ral_e,  '^', 'orange'),
     # ("RK3",   rk3_e,  'p', 'purple'),
     # ("RK4",   rk4_e,  'd', 'red')
 ]

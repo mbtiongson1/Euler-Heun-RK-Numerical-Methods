@@ -18,8 +18,9 @@ h=0.3/(2**m) #m-refinement
 
 
 # Numerical method and polynomial degree for approximation
-method = 'rk22'  # Choose: euler, heun, rk22, rk3, rk4
+method = 'heun'  # Choose: euler, heun, rk22, rk3, rk4
 p = 10  # Polynomial degree for Vandermonde and Lagrange fits
+ls_methods = ['euler', 'heun']  # Methods to compare in least-squares fitting
 
 #actual solution to calculate error
 
@@ -50,4 +51,3 @@ y_actual = [0, 0.025915, 0.094698, 0.156909, 0.166067, 0.101289, -0.023772, -0.1
 # 			f"  Number of intervals (n-1={num_intervals}) must be a multiple of p={polynomial_degree}\n"
 # 		)
 # 		raise ValueError(error_msg)
-
