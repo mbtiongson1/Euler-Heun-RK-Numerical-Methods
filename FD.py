@@ -6,6 +6,7 @@
 from ivp import f, x0, y0, h, xn
 from utils import print_table
 import sys
+import csv
 
 
 def compute_euler():
@@ -123,9 +124,50 @@ def main():
 		raise ValueError('Unknown method. Choose euler, heun, rk22, or rk4')
 
 	rows = finite_differences(xs, ys)
+	headers = ["n", "x", "y", "dy/dx", "d2y/dx2", "method"]
 
 	print(f"Finite Differences using {method.upper()} method")
-	print_table(["n", "x", "y", "dy/dx", "d2y/dx2", "method"], rows)
+	print_table(headers, rows)
+
+	with open("FD.csv", mode='w', newline='') as f:
+		writer = csv.writer(f)
+		writer.writerow(headers)
+		for row in rows:
+			formatted_row = []
+			for val in row:
+				if isinstance(val, float):
+					formatted_row.append(f"{val:.6f}")
+				elif val is None:
+					formatted_row.append("")
+				else:
+					formatted_row.append(str(val))
+			writer.writerow(formatted_row)
+
+	print("CSV file 'FD.csv' successfully created!")
+
+	# Combined plot for first and second derivatives using the same visual style as mainsolver.py
+	try:
+		import matplotlib.pyplot as plt
+	except Exception:
+		print("matplotlib not installed; skipping derivative plot.")
+		return
+
+	x_plot = [row[1] for row in rows]
+	dydx_plot = [row[3] for row in rows]
+	d2ydx2_points = [(row[1], row[4]) for row in rows if row[4] is not None]
+
+	plt.figure(figsize=(10,6))
+	plt.plot(x_plot, dydx_plot, 'o-', label="y'(x)", color='blue', linewidth=0.8, markersize=4)
+	if d2ydx2_points:
+		x2_plot = [p[0] for p in d2ydx2_points]
+		d2ydx2_plot = [p[1] for p in d2ydx2_points]
+		plt.plot(x2_plot, d2ydx2_plot, 's-', label="y''(x)", color='red', linewidth=0.8, markersize=4)
+	plt.xlabel("x")
+	plt.ylabel("Derivative Value")
+	plt.title(f"Finite Difference Derivatives using {method.upper()} Method")
+	plt.legend()
+	plt.grid(True, alpha=0.3)
+	plt.show()
 
 
 if __name__ == '__main__':

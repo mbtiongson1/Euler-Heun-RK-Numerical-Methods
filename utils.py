@@ -120,7 +120,7 @@ def plot_polynomial(xs, ys, coeffs, label="Polynomial Fit", title="Polynomial Ap
     plt.show()
 
 
-def plot_polynomials_compare(xs, ys, coeffs_list, labels, title="Polynomial Comparison", x_end=None, x_actual=None, y_actual=None):
+def plot_polynomials_compare(xs, ys, coeffs_list, labels, title="Polynomial Comparison", x_end=None, x_actual=None, y_actual=None, show_data_points=True):
     """Plot multiple fitted polynomials on the same axes for comparison.
 
     xs: array-like, x-coordinates of data points
@@ -150,7 +150,8 @@ def plot_polynomials_compare(xs, ys, coeffs_list, labels, title="Polynomial Comp
     # y=0 baseline
     ax.axhline(0, color='black', linewidth=0.8, linestyle='-')
 
-    ax.scatter(xs_np, ys_np, color='black', s=60, label='Data Points', zorder=10)
+    if show_data_points:
+        ax.scatter(xs_np, ys_np, color='black', s=60, label='Data Points', zorder=10)
 
     if x_actual is not None and y_actual is not None:
         ax.scatter(np.array(x_actual, dtype=float), np.array(y_actual, dtype=float),
@@ -165,7 +166,8 @@ def plot_polynomials_compare(xs, ys, coeffs_list, labels, title="Polynomial Comp
         ax.plot(x_dense, p_dense, color=color, linewidth=1, label=lbl)
         poly_lines.append(f"{lbl}:  {_build_poly_latex(coeffs_np)}")
 
-    _annotate_points(ax, xs_np, ys_np)
+    if show_data_points:
+        _annotate_points(ax, xs_np, ys_np)
 
     ax.set_xlabel('x')
     ax.set_ylabel('y')
