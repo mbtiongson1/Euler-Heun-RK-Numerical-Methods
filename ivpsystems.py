@@ -5,21 +5,21 @@ import math
 # x' = f(x, y, t)
 # y' = g(x, y, t)
 def f(x, y, t):  # x' define this!
-   return -0.25*x
+   return x*y + t
 
 def g(x, y, t):  # y' define this!
-    return 5 + 0.1*x - 0.4*y
+    return y*t + x
 
 
 # Initial conditions
-t0 = 0
 x0 = 1
-y0 = -2
-tn = 2  # limit of t. By default, starts at 0.
+y0 = -1
+t0 = 0
+tn = 0.2  # limit of t. By default, starts at 0.
 
 # Step Size, Number of steps, refinement parameters
 m = 0  # change this for m-refinement
-h = 0.5 / (2 ** m)  # m-refinement
+h = 0.05 / (2 ** m)  # m-refinement
 # h = 0.3
 
 # n = 9  # change this for n-refinement
@@ -54,8 +54,8 @@ def generate_actual_solutions(t0, tn, h, x_func, y_func):
     return x_vals, y_vals
 
 
-x_actual, y_actual = generate_actual_solutions(t0, tn, h, x_exact_func, y_exact_func)
-
+# x_actual, y_actual = generate_actual_solutions(t0, tn, h, x_exact_func, y_exact_func)
+x_actual, y_actual = None, None
 #manual override of functions
-x_actual = [1, 0.882497, 0.78801, 0.687289, 0.606531]
-y_actual = [-2, 0.670915, 2.852668, 4.3455, 6.08953]
+# x_actual = [1, 0.882497, 0.78801, 0.687289, 0.606531]
+# y_actual = [-2, 0.670915, 2.852668, 4.3455, 6.08953]
