@@ -14,6 +14,8 @@ Numerical analysis toolkit for:
 - Ralston RK2.2 (`rk22.py`)
 - RK3 (`rk3.py`)
 - RK4 (`rk4.py`)
+- Main solver (`mainsolver.py`)
+- Core single-IVP configuration (`ivp.py`)
 
 ### System-IVP Solvers
 - Heun for systems (`heunsystems.py`)
@@ -29,11 +31,9 @@ Numerical analysis toolkit for:
 - Finite differences (`FD.py`)
 
 ### Orchestration / Utilities
-- Main solver (`mainsolver.py`)
 - Combined workflow (`function.py`)
 - Shared formatting and plotting utilities (`utils.py`)
 - Comparison checks (`test.py`)
-- Core single-IVP configuration (`ivp.py`)
 
 ## Project Structure
 
@@ -69,7 +69,83 @@ vandermonde_manual.py
 - `python function.py`
 - `python mainsolver.py`
 - `python mainsystems.py`
+- `python FD.py`
 3. For individual method runs, execute the corresponding module directly (e.g., `python rk4.py`, `python rk4systems.py`).
+
+## How To Set IVP Inputs And Methods
+
+### A) Single IVP (`ivp.py`)
+
+Edit these fields:
+
+```python
+import math
+
+def f(x, y):
+    return math.sqrt(x) * math.sin(2 * x) - 5 * y  # your y' = f(x, y)
+
+# Initial conditions
+x0 = 0      # start x
+y0 = 0      # y(x0)
+xn = 2.4    # end x
+
+# Step control (use one approach)
+m = 1
+h = 0.3 / (2 ** m)      # m-refinement
+# n = 9
+# h = xn / (n - 1)       # n-refinement
+
+# Method selection
+method = 'heun'          # euler | heun | rk22 | rk3 | rk4
+ls_methods = ['euler', 'heun']   # methods compared in least-squares workflows
+```
+
+Actual solution input options:
+- Function-based: define `y_actual_func(x)` and set `y_actual = generate_actual_solution(...)`
+- Manual values: set `y_actual = [ ... ]`
+- Disable actual comparisons: set `y_actual = None`
+
+### B) System IVP (`ivpsystems.py`)
+
+Edit these fields:
+
+```python
+import math
+
+def f(x, y, t):
+    return x * y + t      # x' = f(x, y, t)
+
+def g(x, y, t):
+    return y * t + x      # y' = g(x, y, t)
+
+# Initial conditions
+x0 = 1
+y0 = -1
+t0 = 0
+tn = 0.2
+
+# Step control (use one approach)
+m = 0
+h = 0.05 / (2 ** m)      # m-refinement
+# n = 9
+# h = tn / (n - 1)        # n-refinement
+
+# Method selection
+method = 'rk4'           # heun | rk4
+ls_methods = ['heun', 'rk4']
+```
+
+Actual solution input options:
+- Function-based: define `x_exact_func(t)`/`y_exact_func(t)`, then set
+  `x_actual, y_actual = generate_actual_solutions(...)`
+- Manual values: set `x_actual = [ ... ]` and `y_actual = [ ... ]`
+- Disable actual comparisons: set `x_actual, y_actual = None, None`
+
+### C) Which Script Uses `method`?
+
+- `mainsolver.py` / `function.py` use `ivp.py` and honor `method`.
+- `mainsystems.py` runs multiple system methods using its own `active_methods` list.
+- `heunsystems.py` and `rk4systems.py` run fixed methods directly (they do not switch on `method`).
 
 ## Updates Since `main` Baseline Commit
 
