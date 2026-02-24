@@ -35,7 +35,8 @@ def generate_actual_solution(x0, xn, h, y_func):
         x += h
     return values
 
-#y_actual = generate_actual_solution(x0, xn, h, y_actual_func)
+# y_actual = generate_actual_solution(x0, xn, h, y_actual_func)
+# y_actual = None # manual override of function
 y_actual = [0, 0.025915, 0.094698, 0.156909, 0.166067, 0.101289, -0.023772, -0.165376, -0.266513]
 
 

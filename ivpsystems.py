@@ -20,7 +20,7 @@ tn = 0.2  # limit of t. By default, starts at 0.
 # Step Size, Number of steps, refinement parameters
 m = 0  # change this for m-refinement
 h = 0.05 / (2 ** m)  # m-refinement
-# h = 0.3
+# h = 0.3 # override
 
 # n = 9  # change this for n-refinement
 # h = (tn / (n - 1))  # n-refinement
@@ -55,7 +55,6 @@ def generate_actual_solutions(t0, tn, h, x_func, y_func):
 
 
 # x_actual, y_actual = generate_actual_solutions(t0, tn, h, x_exact_func, y_exact_func)
-x_actual, y_actual = None, None
-#manual override of functions
+x_actual, y_actual = None, None # manual override of functions
 # x_actual = [1, 0.882497, 0.78801, 0.687289, 0.606531]
 # y_actual = [-2, 0.670915, 2.852668, 4.3455, 6.08953]

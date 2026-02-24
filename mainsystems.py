@@ -1,8 +1,13 @@
 import csv
-import matplotlib.pyplot as plt
+
 from ivpsystems import f, g, t0, x0, y0, h, tn, x_actual, y_actual
 from utils import print_table, print_table_csv
 
+try:
+    import matplotlib.pyplot as plt
+    HAS_MATPLOTLIB = True
+except Exception:
+    HAS_MATPLOTLIB = False
 
 # Choose any subset from: euler, heun, ral, rk3, rk4
 # active_methods = ['euler', 'heun', 'ral', 'rk3', 'rk4']
@@ -216,104 +221,107 @@ else:
     print_table_csv(headers, rows)
 
 
-# ---------------------------
-# Plots
-# ---------------------------
-styles = {
-    "euler": ('o-', 'blue'),
-    "heun": ('s-', 'green'),
-    "ral": ('^-', 'orange'),
-    "rk3": ('p-', 'purple'),
-    "rk4": ('d-', 'red'),
-}
+if HAS_MATPLOTLIB:
+    # ---------------------------
+    # Plots
+    # ---------------------------
+    styles = {
+        "euler": ('o-', 'blue'),
+        "heun": ('s-', 'green'),
+        "ral": ('^-', 'orange'),
+        "rk3": ('p-', 'purple'),
+        "rk4": ('d-', 'red'),
+    }
 
-x_palette = ['#1f77b4', '#2a9df4', '#1769aa', '#3b82f6', '#0ea5e9']
-y_palette = ['#d62728', '#ef4444', '#b91c1c', '#f97316', '#fb7185']
-label_stride = max(1, len(t_vals) // 12)
+    x_palette = ['#1f77b4', '#2a9df4', '#1769aa', '#3b82f6', '#0ea5e9']
+    y_palette = ['#d62728', '#ef4444', '#b91c1c', '#f97316', '#fb7185']
+    label_stride = max(1, len(t_vals) // 12)
 
-plt.figure(figsize=(12, 7))
-for idx, m in enumerate(active_methods):
-    x_color = x_palette[idx % len(x_palette)]
-    y_color = y_palette[idx % len(y_palette)]
+    plt.figure(figsize=(12, 7))
+    for idx, m in enumerate(active_methods):
+        x_color = x_palette[idx % len(x_palette)]
+        y_color = y_palette[idx % len(y_palette)]
 
-    plt.plot(
-        t_vals, series_x[m], '-o',
-        label=f"{method_labels[m]} x(t)",
-        color=x_color, linewidth=1.0, markersize=3
-    )
-    plt.plot(
-        t_vals, series_y[m], '--s',
-        label=f"{method_labels[m]} y(t)",
-        color=y_color, linewidth=1.0, markersize=3
-    )
-
-    for i in range(0, len(t_vals), label_stride):
-        plt.annotate(
-            f"{series_x[m][i]:.2f}",
-            xy=(t_vals[i], series_x[m][i]),
-            xytext=(0, 6),
-            textcoords='offset points',
-            fontsize=7,
-            color=x_color,
-            ha='center'
+        plt.plot(
+            t_vals, series_x[m], '-o',
+            label=f"{method_labels[m]} x(t)",
+            color=x_color, linewidth=1.0, markersize=3
         )
-        plt.annotate(
-            f"{series_y[m][i]:.2f}",
-            xy=(t_vals[i], series_y[m][i]),
-            xytext=(0, -10),
-            textcoords='offset points',
-            fontsize=7,
-            color=y_color,
-            ha='center'
+        plt.plot(
+            t_vals, series_y[m], '--s',
+            label=f"{method_labels[m]} y(t)",
+            color=y_color, linewidth=1.0, markersize=3
         )
 
-if show_actual_in_plots:
-    plt.plot(t_check, x_actual, 'k-o', label="Actual x(t)", linewidth=1.2, markersize=3, zorder=10)
-    plt.plot(t_check, y_actual, 'k--s', label="Actual y(t)", linewidth=1.2, markersize=3, zorder=10)
-plt.xlabel("t")
-plt.ylabel("State Value")
-plt.title("Numerical Methods Comparison for x(t) and y(t)")
-plt.legend()
-plt.grid(True)
-plt.show()
+        for i in range(0, len(t_vals), label_stride):
+            plt.annotate(
+                f"{series_x[m][i]:.2f}",
+                xy=(t_vals[i], series_x[m][i]),
+                xytext=(0, 6),
+                textcoords='offset points',
+                fontsize=7,
+                color=x_color,
+                ha='center'
+            )
+            plt.annotate(
+                f"{series_y[m][i]:.2f}",
+                xy=(t_vals[i], series_y[m][i]),
+                xytext=(0, -10),
+                textcoords='offset points',
+                fontsize=7,
+                color=y_color,
+                ha='center'
+            )
 
-# Phase plot: x(t) vs y(t)
-plt.figure(figsize=(10, 6))
-for m in active_methods:
-    style, color = styles[m]
-    plt.plot(series_x[m], series_y[m], style, label=method_labels[m], color=color, linewidth=0.8, markersize=3)
-if show_actual_in_plots:
-    plt.plot(x_actual, y_actual, 'k--o', label="Actual", linewidth=0.8, markersize=4, zorder=10)
-plt.xlabel("x(t)")
-plt.ylabel("y(t)")
-plt.title("Phase Plot: x(t) vs y(t)")
-plt.legend()
-plt.grid(True)
-plt.show()
-
-if show_actual_in_plots:
-    plt.figure(figsize=(10, 6))
-    for m in active_methods:
-        errs_x = [pct_err(x_actual[i], series_x[m][idx]) for i, idx in enumerate(indices)]
-        marker = styles[m][0][0]
-        color = styles[m][1]
-        plt.scatter(t_check, errs_x, marker=marker, label=method_labels[m], color=color, zorder=5)
+    if show_actual_in_plots:
+        plt.plot(t_check, x_actual, 'k-o', label="Actual x(t)", linewidth=1.2, markersize=3, zorder=10)
+        plt.plot(t_check, y_actual, 'k--s', label="Actual y(t)", linewidth=1.2, markersize=3, zorder=10)
     plt.xlabel("t")
-    plt.ylabel("Percent Relative Error (%)")
-    plt.title("x(t) Percent Relative Errors")
+    plt.ylabel("State Value")
+    plt.title("Numerical Methods Comparison for x(t) and y(t)")
     plt.legend()
-    plt.grid(True, alpha=0.3)
+    plt.grid(True)
     plt.show()
 
+    # Phase plot: x(t) vs y(t)
     plt.figure(figsize=(10, 6))
     for m in active_methods:
-        errs_y = [pct_err(y_actual[i], series_y[m][idx]) for i, idx in enumerate(indices)]
-        marker = styles[m][0][0]
-        color = styles[m][1]
-        plt.scatter(t_check, errs_y, marker=marker, label=method_labels[m], color=color, zorder=5)
-    plt.xlabel("t")
-    plt.ylabel("Percent Relative Error (%)")
-    plt.title("y(t) Percent Relative Errors")
+        style, color = styles[m]
+        plt.plot(series_x[m], series_y[m], style, label=method_labels[m], color=color, linewidth=0.8, markersize=3)
+    if show_actual_in_plots:
+        plt.plot(x_actual, y_actual, 'k--o', label="Actual", linewidth=0.8, markersize=4, zorder=10)
+    plt.xlabel("x(t)")
+    plt.ylabel("y(t)")
+    plt.title("Phase Plot: x(t) vs y(t)")
     plt.legend()
-    plt.grid(True, alpha=0.3)
+    plt.grid(True)
     plt.show()
+
+    if show_actual_in_plots:
+        plt.figure(figsize=(10, 6))
+        for m in active_methods:
+            errs_x = [pct_err(x_actual[i], series_x[m][idx]) for i, idx in enumerate(indices)]
+            marker = styles[m][0][0]
+            color = styles[m][1]
+            plt.scatter(t_check, errs_x, marker=marker, label=method_labels[m], color=color, zorder=5)
+        plt.xlabel("t")
+        plt.ylabel("Percent Relative Error (%)")
+        plt.title("x(t) Percent Relative Errors")
+        plt.legend()
+        plt.grid(True, alpha=0.3)
+        plt.show()
+
+        plt.figure(figsize=(10, 6))
+        for m in active_methods:
+            errs_y = [pct_err(y_actual[i], series_y[m][idx]) for i, idx in enumerate(indices)]
+            marker = styles[m][0][0]
+            color = styles[m][1]
+            plt.scatter(t_check, errs_y, marker=marker, label=method_labels[m], color=color, zorder=5)
+        plt.xlabel("t")
+        plt.ylabel("Percent Relative Error (%)")
+        plt.title("y(t) Percent Relative Errors")
+        plt.legend()
+        plt.grid(True, alpha=0.3)
+        plt.show()
+else:
+    print("matplotlib not installed; skipping plots.")
