@@ -83,9 +83,17 @@ def main():
     # Use only the first p+1 data points for interpolation-based methods
     xs_sampled, ys_sampled = xs[:p + 1], ys[:p + 1]
 
-    # Compute x coordinates for y_actual reference points
-    actual_spacing = xn / (len(y_actual) - 1)
-    x_actual = [x0 + i * actual_spacing for i in range(len(y_actual))]
+    has_actual = (
+        isinstance(y_actual, list)
+        and len(y_actual) > 1
+        and all(isinstance(v, (int, float)) for v in y_actual)
+    )
+    if has_actual:
+        # Compute x coordinates for y_actual reference points
+        actual_spacing = (xn - x0) / (len(y_actual) - 1)
+        x_actual = [x0 + i * actual_spacing for i in range(len(y_actual))]
+    else:
+        x_actual = None
 
     V = build_vandermonde(xs_sampled, p)
 
@@ -125,8 +133,8 @@ def main():
         [f"Vandermonde (degree {p})", f"Lagrange (degree {p})"],
         title="Vandermonde vs Lagrange Polynomial Approximation",
         x_end=xn,
-        x_actual=x_actual,
-        y_actual=y_actual,
+        x_actual=x_actual if has_actual else None,
+        y_actual=y_actual if has_actual else None,
     )
     plot_polynomial(
         xs_sampled,
@@ -135,8 +143,8 @@ def main():
         label="Vandermonde Fit",
         title=f"Vandermonde Polynomial Fit (p={p})",
         x_end=xn,
-        x_actual=x_actual,
-        y_actual=y_actual,
+        x_actual=x_actual if has_actual else None,
+        y_actual=y_actual if has_actual else None,
     )
     plot_polynomial(
         xs_sampled,
@@ -145,8 +153,8 @@ def main():
         label="Lagrange Interpolation",
         title=f"Lagrange Interpolation (degree p={p})",
         x_end=xn,
-        x_actual=x_actual,
-        y_actual=y_actual,
+        x_actual=x_actual if has_actual else None,
+        y_actual=y_actual if has_actual else None,
     )
 
     # Least-squares comparison across multiple methods (configured in ivp.py)
@@ -179,67 +187,57 @@ def main():
             labels,
             title="Least-Squares Fit Comparison Across Methods",
             x_end=xn,
-            x_actual=x_actual,
-            y_actual=y_actual,
+            x_actual=x_actual if has_actual else None,
+            y_actual=y_actual if has_actual else None,
             show_data_points=False,
         )
 
         # Error graph: least-squares fit vs y_actual at actual checkpoints
-        try:
-            import matplotlib.pyplot as plt
+        if has_actual:
+            try:
+                import matplotlib.pyplot as plt
 
-            plt.figure(figsize=(10, 6))
-            markers = ['o', 's', '^', 'd', 'p', '*']
-            colors = ['blue', 'green', 'orange', 'red', 'purple', 'brown']
+                plt.figure(figsize=(10, 6))
+                markers = ['o', 's', '^', 'd', 'p', '*']
+                colors = ['blue', 'green', 'orange', 'red', 'purple', 'brown']
 
-            # # Reference data points: actual checkpoints correspond to 0% relative error
-            # plt.scatter(
-            #     x_actual,
-            #     [0.0] * len(x_actual),
-            #     marker='x',
-            #     label="Actual Data Points (0% error)",
-            #     color='black',
-            #     zorder=6,
-            # )
+                for i, entry in enumerate(least_squares_results):
+                    coeffs_ls = entry["result"]["coeffs"]
+                    errors = []
+                    for x_i, y_act in zip(x_actual, y_actual):
+                        y_fit = _eval_poly(coeffs_ls, x_i)
+                        errors.append(_pct_err(y_act, y_fit))
 
-            for i, entry in enumerate(least_squares_results):
-                coeffs_ls = entry["result"]["coeffs"]
-                errors = []
-                for x_i, y_act in zip(x_actual, y_actual):
-                    y_fit = _eval_poly(coeffs_ls, x_i)
-                    errors.append(_pct_err(y_act, y_fit))
+                    plt.scatter(
+                        x_actual,
+                        errors,
+                        marker=markers[i % len(markers)],
+                        label=f"LS {entry['method'].upper()}",
+                        color=colors[i % len(colors)],
+                        zorder=5,
+                    )
 
-                plt.scatter(
-                    x_actual,
-                    errors,
-                    marker=markers[i % len(markers)],
-                    label=f"LS {entry['method'].upper()}",
-                    color=colors[i % len(colors)],
-                    # linewidth=0.8,
-                    # markersize=4,
-                    zorder=5,
-                )
-
-            plt.xlabel("x")
-            plt.ylabel("Percent Relative Error (%)")
-            plt.title("Least-Squares Error vs Actual Values")
-            plt.legend()
-            plt.grid(True, alpha=0.3)
-            plt.show()
-        except Exception:
-            print("matplotlib not installed; skipping least-squares error plot.")
+                plt.xlabel("x")
+                plt.ylabel("Percent Relative Error (%)")
+                plt.title("Least-Squares Error vs Actual Values")
+                plt.legend()
+                plt.grid(True, alpha=0.3)
+                plt.show()
+            except Exception:
+                print("matplotlib not installed; skipping least-squares error plot.")
 
     # Build least-squares error rows at y_actual checkpoints for CSV comparison
     ls_error_tables = []
-    for entry in least_squares_results:
-        method_name = entry["method"]
-        coeffs_ls = entry["result"]["coeffs"]
-        rows = []
-        for i, (x_i, y_act) in enumerate(zip(x_actual, y_actual)):
-            y_fit = _eval_poly(coeffs_ls, x_i)
-            err_pct = _pct_err(y_act, y_fit)
-            rows.append((i, x_i, y_act, y_fit, err_pct))
-        ls_error_tables.append({"method": method_name, "rows": rows})
+    if has_actual:
+        for entry in least_squares_results:
+            method_name = entry["method"]
+            coeffs_ls = entry["result"]["coeffs"]
+            rows = []
+            for i, (x_i, y_act) in enumerate(zip(x_actual, y_actual)):
+                y_fit = _eval_poly(coeffs_ls, x_i)
+                err_pct = _pct_err(y_act, y_fit)
+                rows.append((i, x_i, y_act, y_fit, err_pct))
+            ls_error_tables.append({"method": method_name, "rows": rows})
 
     _export_to_csv(
         xs_sampled,

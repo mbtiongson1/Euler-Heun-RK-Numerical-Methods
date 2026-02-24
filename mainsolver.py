@@ -3,16 +3,6 @@ import csv
 from ivp import f, x0, y0, h, xn, y_actual
 from utils import print_table, print_table_csv
 
-# ---------------------------
-# x_actual: independent x-coordinates for y_actual
-# spaced evenly from x0 to xn based on len(y_actual)
-# ---------------------------
-n_actual = len(y_actual)
-actual_spacing = (xn - x0) / (n_actual - 1)
-x_actual = [x0 + i * actual_spacing for i in range(n_actual)]
-
-# How many numerical steps fall between each y_actual checkpoint
-actual_stride = round(actual_spacing / h)
 num_steps = int(round((xn - x0) / h))
 
 # ---------------------------
@@ -68,16 +58,6 @@ for step in range(num_steps):
     rk4_y.append(y_rk)
 
 # ---------------------------
-# Extract numerical values at y_actual checkpoints only
-# (every actual_stride steps)
-# ---------------------------
-euler_at_actual = [euler_y[i * actual_stride] for i in range(n_actual)]
-heun_at_actual  = [heun_y [i * actual_stride] for i in range(n_actual)]
-ral_at_actual   = [ral_y  [i * actual_stride] for i in range(n_actual)]
-rk3_at_actual   = [rk3_y  [i * actual_stride] for i in range(n_actual)]
-rk4_at_actual   = [rk4_y  [i * actual_stride] for i in range(n_actual)]
-
-# ---------------------------
 # Compute percent errors at checkpoints only
 # ---------------------------
 def pct_err(actual, approx):
@@ -85,37 +65,58 @@ def pct_err(actual, approx):
         return 0.0
     return abs((actual - approx) / actual * 100)
 
-euler_e = [pct_err(y_actual[i], euler_at_actual[i]) for i in range(n_actual)]
-heun_e  = [pct_err(y_actual[i], heun_at_actual[i])  for i in range(n_actual)]
-ral_e   = [pct_err(y_actual[i], ral_at_actual[i])   for i in range(n_actual)]
-rk3_e   = [pct_err(y_actual[i], rk3_at_actual[i])   for i in range(n_actual)]
-rk4_e   = [pct_err(y_actual[i], rk4_at_actual[i])   for i in range(n_actual)]
+has_actual = (
+    isinstance(y_actual, list)
+    and len(y_actual) > 1
+    and all(isinstance(v, (int, float)) for v in y_actual)
+)
 
-# ---------------------------
-# Prepare table rows (checkpoints only)
-# ---------------------------
-rows = []
-for i in range(n_actual):
-    rows.append((
-        i, x_actual[i], y_actual[i],
-        euler_at_actual[i], f"{euler_e[i]:.5f}%",
-        heun_at_actual[i],  f"{heun_e[i]:.5f}%",
-        ral_at_actual[i],   f"{ral_e[i]:.5f}%",
-        rk3_at_actual[i],   f"{rk3_e[i]:.5f}%",
-        rk4_at_actual[i],   f"{rk4_e[i]:.5f}%"
-    ))
+if has_actual:
+    n_actual = len(y_actual)
+    actual_spacing = (xn - x0) / (n_actual - 1)
+    actual_stride = max(1, round(actual_spacing / h))
+    x_actual = [x0 + i * actual_spacing for i in range(n_actual)]
+    checkpoint_indices = [min(i * actual_stride, num_steps) for i in range(n_actual)]
 
-# ---------------------------
-# Table headers
-# ---------------------------
-headers = [
-    "n", "x", "y (actual)",
-    "Euler (y)","Euler (error)",
-    "Heun/PC (y)","Heun/PC (error)",
-    "RK2.2 (y)","RK2.2 (error)",
-    "RK3 (y)","RK3 (error)",
-    "RK4 (y)","RK4 (error)"
-]
+    euler_at_actual = [euler_y[idx] for idx in checkpoint_indices]
+    heun_at_actual = [heun_y[idx] for idx in checkpoint_indices]
+    ral_at_actual = [ral_y[idx] for idx in checkpoint_indices]
+    rk3_at_actual = [rk3_y[idx] for idx in checkpoint_indices]
+    rk4_at_actual = [rk4_y[idx] for idx in checkpoint_indices]
+
+    euler_e = [pct_err(y_actual[i], euler_at_actual[i]) for i in range(n_actual)]
+    heun_e = [pct_err(y_actual[i], heun_at_actual[i]) for i in range(n_actual)]
+    ral_e = [pct_err(y_actual[i], ral_at_actual[i]) for i in range(n_actual)]
+    rk3_e = [pct_err(y_actual[i], rk3_at_actual[i]) for i in range(n_actual)]
+    rk4_e = [pct_err(y_actual[i], rk4_at_actual[i]) for i in range(n_actual)]
+
+    rows = []
+    for i in range(n_actual):
+        rows.append((
+            i, x_actual[i], y_actual[i],
+            euler_at_actual[i], f"{euler_e[i]:.5f}%",
+            heun_at_actual[i], f"{heun_e[i]:.5f}%",
+            ral_at_actual[i], f"{ral_e[i]:.5f}%",
+            rk3_at_actual[i], f"{rk3_e[i]:.5f}%",
+            rk4_at_actual[i], f"{rk4_e[i]:.5f}%"
+        ))
+
+    headers = [
+        "n", "x", "y (actual)",
+        "Euler (y)", "Euler (error)",
+        "Heun/PC (y)", "Heun/PC (error)",
+        "RK2.2 (y)", "RK2.2 (error)",
+        "RK3 (y)", "RK3 (error)",
+        "RK4 (y)", "RK4 (error)"
+    ]
+else:
+    x_actual = None
+    rows = []
+    for i, x in enumerate(x_vals):
+        rows.append((
+            i, x, euler_y[i], heun_y[i], ral_y[i], rk3_y[i], rk4_y[i]
+        ))
+    headers = ["n", "x", "Euler (y)", "Heun/PC (y)", "RK2.2 (y)", "RK3 (y)", "RK4 (y)"]
 
 # Print console table
 print("Comparison of Numerical Methods")
@@ -154,9 +155,10 @@ for name, y_vals, style, color in methods:
     plt.plot(x_vals, y_vals, style, label=name, color=color, linewidth=0.8,
              markersize=3)
 
-# y_actual plotted independently at its own x-coordinates
-plt.plot(x_actual, y_actual, 'k--o', label="Actual", linewidth=0.8,
-         markersize=4, zorder=10)
+if has_actual:
+    # y_actual plotted independently at its own x-coordinates
+    plt.plot(x_actual, y_actual, 'k--o', label="Actual", linewidth=0.8,
+             markersize=4, zorder=10)
 
 plt.xlabel("x")
 plt.ylabel("y")
@@ -168,21 +170,22 @@ plt.show()
 # ---------------------------
 # Figure 2: Percent error scatter (at y_actual checkpoints only)
 # ---------------------------
-plt.figure(figsize=(10,6))
-error_methods = [
-    ("Euler",   euler_e, 'o', 'blue'),
-    ("PC", heun_e,  's', 'green'),
-    #("RK2.2", ral_e,  '^', 'orange'),
-    # ("RK3",   rk3_e,  'p', 'purple'),
-    # ("RK4",   rk4_e,  'd', 'red')
-]
+if has_actual:
+    plt.figure(figsize=(10,6))
+    error_methods = [
+        ("Euler", euler_e, 'o', 'blue'),
+        ("PC", heun_e, 's', 'green'),
+        #("RK2.2", ral_e, '^', 'orange'),
+        #("RK3", rk3_e, 'p', 'purple'),
+        #("RK4", rk4_e, 'd', 'red')
+    ]
 
-for name, e_vals, marker, color in error_methods:
-    plt.scatter(x_actual, e_vals, marker=marker, label=name, color=color, zorder=5)
+    for name, e_vals, marker, color in error_methods:
+        plt.scatter(x_actual, e_vals, marker=marker, label=name, color=color, zorder=5)
 
-plt.xlabel("x")
-plt.ylabel("Percent Relative Error (%)")
-plt.title("Percent Relative Errors Comparison")
-plt.legend()
-plt.grid(True, alpha=0.3)
-plt.show()
+    plt.xlabel("x")
+    plt.ylabel("Percent Relative Error (%)")
+    plt.title("Percent Relative Errors Comparison")
+    plt.legend()
+    plt.grid(True, alpha=0.3)
+    plt.show()
