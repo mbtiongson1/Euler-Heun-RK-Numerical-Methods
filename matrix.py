@@ -1,4 +1,4 @@
-from ivpsecond import x0, y0, dy0, h
+from ivpsystems2nd import x0, y0, dy0, h
 from utils import print_table
 import math
 

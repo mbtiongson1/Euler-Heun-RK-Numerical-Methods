@@ -1,4 +1,4 @@
-from ivpsecond import f2, x0, y0, dy0, h, xn
+from ivpsystems2nd import f2, x0, y0, dy0, h, xn
 from matrix import solve_linear_system
 from utils import print_table
 
