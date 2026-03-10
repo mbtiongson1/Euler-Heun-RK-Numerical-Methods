@@ -1,8 +1,15 @@
 from ivpsystems import f, g, t0, x0, y0, h, tn, x_actual, y_actual
 from utils import print_table
 
-# Calculate number of steps
-num_steps = int(round((tn - t0) / h))
+# Calculate number of steps.
+# Require h to divide the interval exactly so the final RK4 step lands on tn.
+steps_exact = (tn - t0) / h
+num_steps = int(round(steps_exact))
+if abs(steps_exact - num_steps) > 1e-12:
+    raise ValueError(
+        "Inconsistent step size: h must divide (tn - t0) exactly. "
+        f"Got (tn - t0)/h = {steps_exact}."
+    )
 has_actual = (
     isinstance(x_actual, list)
     and isinstance(y_actual, list)
@@ -13,7 +20,7 @@ has_actual = (
 
 def pct_err(actual, approx):
     if actual == 0:
-        return 0.0
+        return 0.0 if approx == 0 else float("inf")
     return abs((actual - approx) / actual * 100)
 
 rows = []
@@ -29,23 +36,23 @@ else:
 x = x0
 y = y0
 for n in range(1, num_steps + 1):
-    t = t0 + n * h
-    t_prev = t0 + (n - 1) * h
+    t = t0 + n*h
+    t_prev = t0 + (n - 1)*h
 
     k1x = h * f(x, y, t_prev)
     k1y = h * g(x, y, t_prev)
 
-    k2x = h * f(x + 0.5 * k1x, y + 0.5 * k1y, t_prev + 0.5 * h)
-    k2y = h * g(x + 0.5 * k1x, y + 0.5 * k1y, t_prev + 0.5 * h)
+    k2x = h * f(x + 0.5*k1x, y + 0.5*k1y, t_prev + 0.5*h)
+    k2y = h * g(x + 0.5*k1x, y + 0.5*k1y, t_prev + 0.5*h)
 
-    k3x = h * f(x + 0.5 * k2x, y + 0.5 * k2y, t_prev + 0.5 * h)
-    k3y = h * g(x + 0.5 * k2x, y + 0.5 * k2y, t_prev + 0.5 * h)
+    k3x = h * f(x + 0.5*k2x, y + 0.5*k2y, t_prev + 0.5*h)
+    k3y = h * g(x + 0.5*k2x, y + 0.5*k2y, t_prev + 0.5*h)
 
     k4x = h * f(x + k3x, y + k3y, t)
     k4y = h * g(x + k3x, y + k3y, t)
 
-    x = x + (1 / 6) * (k1x + 2 * k2x + 2 * k3x + k4x)
-    y = y + (1 / 6) * (k1y + 2 * k2y + 2 * k3y + k4y)
+    x = x + (1 / 6) * (k1x + 2*k2x + 2*k3x + k4x)
+    y = y + (1 / 6) * (k1y + 2*k2y + 2*k3y + k4y)
 
     if has_actual:
         ex = pct_err(x_actual[n], x)
