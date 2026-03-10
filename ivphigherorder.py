@@ -22,9 +22,11 @@ def f2(x, y, dy):
     return d2y
 
 # Third-order
+"""
 def f3(x, y, dy, d2y):
     d3y = None # = y'''
     return d3y 
+"""
 
 # Initial conditions
 x0, xn = 0.0, 2.0
@@ -37,7 +39,7 @@ m = 1  # change this for m-refinement
 h = 0.3 / (2 ** m)  # m-refinement
 h = 0.3
 
-n = 6  # change this for n-refinement
+n = 5  # change this for n-refinement
 h = (xn / (n - 1))  # n-refinement
 
 # approximating
@@ -73,8 +75,8 @@ def generate_actual_solutions(x0, xn, h, y_func, dy_func, d2y_func):
         x += h
     return y_vals, dy_vals
 
-y_actual, dy_actual, d2y_actual = generate_actual_solutions(x0, xn, h, y_actual_func, dy_actual_func, d2y_actual_func)
-# y_actual, dy_actual, d2y_actual = None, None, None  # manual override of functions
-# y_actual = [ ... ]
+# y_actual, dy_actual, d2y_actual = generate_actual_solutions(x0, xn, h, y_actual_func(), dy_actual_func(), d2y_actual_func()
+y_actual, dy_actual, d2y_actual = None, None, None  # manual override of functions
+y_actual = [0, 1.86641, 4.25067, 7.06437, 9.29424]
 # dy_actual = [ ... ]
 # d2y_actual = [ ... ]
