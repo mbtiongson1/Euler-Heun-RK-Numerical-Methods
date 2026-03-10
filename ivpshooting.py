@@ -8,7 +8,7 @@ def f(y, z, x):  # z=y' define this!
    return z
 
 def g(y, z, x):  # z'=y'' define this!
-    return -1*y + x**2 - 2*math.sin(x)
+    return - 2 + 2*(z/x)
 
 
 # Initial conditions if x,y,t
@@ -18,26 +18,32 @@ def g(y, z, x):  # z'=y'' define this!
 # tn = 0.2  # limit of t. By default, starts at 0.
 
 #Initial conditions if y,z,x
-x0 = 0
-xn = 1
-y0 = 1
+x0 = 1
+xn = 3
+z0 = 1
 
-beta = -1.57119 #given as y'10
+beta = 3 #given as y'10
 
 def linearize(gamma1, gamma2, g1, g2, beta):
     if (g1-g2) == 0: 
         return 0
     else:
         gamma3 = gamma2 - (g2-beta) * (gamma2-gamma1)/(g2-g1)
+        print('new gamma = ',gamma3)
         return gamma3
-
-gamma1 = 3
-gamma2 = -3
-g1 = 0
-g2 = 0
-
-z0 = gamma1
+#Trial 1
+gamma1 = 1
+g1 = 0.522574 #from results
+#Trial 2
+gamma2 = 9
+g2 = 8.522574 #from results
+#Trial 3
 gamma3 = linearize(gamma1, gamma2, g1, g2, beta)
+g3 = 0.436934
+
+y0 = gamma3 #edit this per trial
+# gamma3 = 3.4774259999999995
+
 
 # Normalizing:
 t0 = x0
@@ -47,26 +53,26 @@ y0 = z0
 
 # Step Size, Number of steps, refinement parameters
 m = 0  # change this for m-refinement
-h = 0.05 / (2 ** m)  # m-refinement
-h = 0.1 # override
+# h = 0.05 / (2 ** m)  # m-refinement
+h = 0.25 # override
 
 # n = 9  # change this for n-refinement
 # h = (tn / (n - 1))  # n-refinement
 
 
 # Numerical method and polynomial degree for approximation
-method = 'rk4'  # Choose: heun, rk4
+method = 'heun'  # Choose: heun, rk4
 p = 10  # Polynomial degree for Vandermonde and Lagrange fits
 ls_methods = ['heun', 'rk4']  # Methods to compare in least-squares fitting
 
 
 # Exact solutions for error checking
 def x_exact_func(t):
-    return None #define this if given
+    return -1*t**3 + t**2 + 21 #define this if given
 
 
 def y_exact_func(t):
-    return None
+    return 0
 
 def generate_actual_solutions(t0, tn, h, x_func, y_func):
     t = t0
@@ -79,7 +85,7 @@ def generate_actual_solutions(t0, tn, h, x_func, y_func):
     return x_vals, y_vals
 
 
-# x_actual, y_actual = generate_actual_solutions(t0, tn, h, x_exact_func, y_exact_func)
-x_actual, y_actual = None, None # manual override of functions
-x_actual = [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
-y_actual = [1.0, 0.95675, ]
+x_actual, y_actual = generate_actual_solutions(t0, tn, h, x_exact_func, y_exact_func)
+# x_actual, y_actual = None, None # manual override of functions
+# x_actual = [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
+# y_actual = [1.0, 0.95675, ]
