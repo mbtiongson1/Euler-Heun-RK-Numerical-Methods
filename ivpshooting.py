@@ -29,15 +29,19 @@ def linearize(gamma1, gamma2, g1, g2, beta):
         return 0
     else:
         gamma3 = gamma2 - (g2-beta) * (gamma2-gamma1)/(g2-g1)
+        print('new gamma = ',gamma3)
         return gamma3
-
+#Trial 1
 gamma1 = 3
+g1 = 0.255026 #from results
+#Trial 2
 gamma2 = -3
-g1 = 0
-g2 = 0
-
-z0 = gamma1
+g2 = -2.986792 #from results
+#Trial 3
 gamma3 = linearize(gamma1, gamma2, g1, g2, beta)
+g3 = -0.3799849343794133
+z0 = gamma3
+
 
 # Normalizing:
 t0 = x0
@@ -81,5 +85,5 @@ def generate_actual_solutions(t0, tn, h, x_func, y_func):
 
 # x_actual, y_actual = generate_actual_solutions(t0, tn, h, x_exact_func, y_exact_func)
 x_actual, y_actual = None, None # manual override of functions
-x_actual = [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
-y_actual = [1.0, 0.95675, ]
+# x_actual = [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
+# y_actual = [1.0, 0.95675, ]
