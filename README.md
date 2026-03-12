@@ -48,6 +48,7 @@ This project implements:
 ├── docs/
 │   └── index.html
 ├── out/                            # generated outputs (ignored by git)
+├── root/                           # optional wrapper scripts (python root/solver.py, etc.)
 └── README.md
 ```
 
@@ -80,6 +81,12 @@ python -m numerical_methods.main.function
 python -m numerical_methods.main.solver
 python -m numerical_methods.main.systems
 python -m numerical_methods.fd.FD
+
+# Optional wrapper scripts (if you prefer python <file>.py style)
+python root/function.py
+python root/solver.py
+python root/systems.py
+python root/FD.py
 ```
 
 ### 4. Run Individual Methods
@@ -92,6 +99,9 @@ python -m numerical_methods.methods.rk3
 python -m numerical_methods.methods.rk4
 python -m numerical_methods.methods.heunsystems
 python -m numerical_methods.methods.rk4systems
+
+# Optional wrappers
+python root/rk4.py
 ```
 
 Outputs that are written to disk (CSVs) are written under `out/csv/`.

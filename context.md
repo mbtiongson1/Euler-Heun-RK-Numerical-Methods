@@ -1,10 +1,11 @@
 # Repo Architecture Context
 
-This repository is organized as an importable Python package.
+This repository is organized as an importable Python package, with optional wrapper scripts under `root/`.
 
 ## High-Level Layout
 
 - `numerical_methods/`: Canonical source code (import from here).
+- `root/`: Optional wrapper scripts (for `python root/solver.py` instead of `python -m ...`).
 - `docs/`: Static HTML index and documentation assets.
 - `out/`: Generated outputs (CSVs, figures, reports). This folder is ignored by git.
 
@@ -37,6 +38,10 @@ This repository is organized as an importable Python package.
 Preferred (module runs):
 - `python -m numerical_methods.main.solver`
 - `python -m numerical_methods.main.function`
+
+Optional wrappers:
+- `python root/solver.py`
+- `python root/function.py`
 
 ## Outputs
 
