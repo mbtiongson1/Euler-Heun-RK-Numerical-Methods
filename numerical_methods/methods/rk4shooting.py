@@ -1,5 +1,5 @@
-from ivpshooting import f, g, t0, x0, y0, h, tn, x_actual, y_actual
-from utils import print_table
+from numerical_methods.problems.ivpshooting import f, g, h, t0, tn, x0, x_actual, y0, y_actual
+from numerical_methods.utils import print_table
 
 # Calculate number of steps.
 # Require h to divide the interval exactly so the final RK4 step lands on tn.

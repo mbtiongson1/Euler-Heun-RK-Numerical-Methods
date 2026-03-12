@@ -51,8 +51,8 @@ def solve_lagrange(xs, ys, p=None):
 
 
 if __name__ == '__main__':
-	from FD import compute_euler, compute_heun, compute_rk22, compute_rk4
-	from ivp import method, p
+	from numerical_methods.fd.FD import compute_euler, compute_heun, compute_rk22, compute_rk4
+	from numerical_methods.problems.ivp import method, p
 
 	if method == 'euler':
 		xs, ys = compute_euler()

@@ -3,11 +3,12 @@
 # Forward Difference at first step, Backward Difference at last step,
 # Central Difference for interior points.
 
-from ivp import f, x0, y0, h, xn
-from utils import print_table
 import sys
 import csv
 
+from numerical_methods.paths import csv_path
+from numerical_methods.problems.ivp import f, h, x0, xn, y0
+from numerical_methods.utils import print_table
 
 def compute_euler():
 	x = x0
@@ -129,7 +130,8 @@ def main():
 	print(f"Finite Differences using {method.upper()} method")
 	print_table(headers, rows)
 
-	with open("FD.csv", mode='w', newline='') as f:
+	out_path = csv_path("FD.csv")
+	with open(out_path, mode='w', newline='') as f:
 		writer = csv.writer(f)
 		writer.writerow(headers)
 		for row in rows:
@@ -143,7 +145,7 @@ def main():
 					formatted_row.append(str(val))
 			writer.writerow(formatted_row)
 
-	print("CSV file 'FD.csv' successfully created!")
+	print(f"CSV file created: {out_path}")
 
 	# Combined plot for first and second derivatives using the same visual style as mainsolver.py
 	try:

@@ -1,8 +1,8 @@
 """Least-squares polynomial approximation for cases where p < n."""
 
-from FD import compute_euler, compute_heun, compute_rk22, compute_rk4
-from ivp import method, p, x0, xn, y_actual
-from utils import plot_polynomial
+from numerical_methods.fd.FD import compute_euler, compute_heun, compute_rk22, compute_rk4
+from numerical_methods.problems.ivp import method, p, x0, xn, y_actual
+from numerical_methods.utils import plot_polynomial
 
 
 def _print_matrix(name, M):

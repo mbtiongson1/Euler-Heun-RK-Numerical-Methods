@@ -29,8 +29,8 @@ def solve_vandermonde(V, y):
 
 if __name__ == '__main__':
 	"""Standalone mode: compute Vandermonde polynomial fit from current IVP config."""
-	from FD import compute_heun, compute_euler, compute_rk22, compute_rk4
-	from ivp import method, p
+	from numerical_methods.fd.FD import compute_euler, compute_heun, compute_rk22, compute_rk4
+	from numerical_methods.problems.ivp import method, p
 
 	# Compute x and y values using the configured method
 	if method == 'euler':

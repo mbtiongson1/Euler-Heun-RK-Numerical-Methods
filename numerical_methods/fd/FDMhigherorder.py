@@ -1,5 +1,5 @@
-from ivphigherorder import f2, x0, y0, dy0, d2y0, h, xn, a0, a1, a2, a3, a4, y_actual
-from matrix import matrixsolver
+from numerical_methods.matrix import matrixsolver
+from numerical_methods.problems.ivphigherorder import a0, a1, a2, a3, a4, d2y0, dy0, f2, h, x0, xn, y0, y_actual
 import math
 import numpy as np
 import pandas as pd

@@ -1,7 +1,7 @@
 #RK3 method
 
-from ivp import f, x0, y0, h, xn#, y_actual
-from utils import print_table
+from numerical_methods.problems.ivp import f, h, x0, xn, y0  # , y_actual
+from numerical_methods.utils import print_table
 
 # Calculate number of steps
 num_steps = int(round((xn - x0) / h))

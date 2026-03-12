@@ -1,7 +1,7 @@
 """Compare RK4 results for different refinement levels (n=9 and n=5)."""
 
 import math
-from ivp import f, x0, y0, xn
+from numerical_methods.problems.ivp import f, x0, xn, y0
 
 def compute_rk4(n_points):
 	"""Compute RK4 solution with n refinement level."""

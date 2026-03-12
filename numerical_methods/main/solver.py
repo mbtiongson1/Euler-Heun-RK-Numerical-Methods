@@ -1,7 +1,10 @@
-import matplotlib.pyplot as plt
 import csv
-from ivp import f, x0, y0, h, xn, y_actual
-from utils import print_table, print_table_csv
+
+import matplotlib.pyplot as plt
+
+from numerical_methods.paths import csv_path
+from numerical_methods.problems.ivp import f, h, x0, xn, y0, y_actual
+from numerical_methods.utils import print_table, print_table_csv
 
 num_steps = int(round((xn - x0) / h))
 
@@ -124,7 +127,8 @@ print_table(headers, rows)
 print_table_csv(headers, rows)
 
 # Write CSV file
-with open("output.csv", mode='w', newline='') as f:
+output_path = csv_path("output.csv")
+with open(output_path, mode="w", newline="") as f:
     writer = csv.writer(f)
     writer.writerow(headers)
     for row in rows:
@@ -137,7 +141,7 @@ with open("output.csv", mode='w', newline='') as f:
             else:
                 formatted_row.append(str(val))
         writer.writerow(formatted_row)
-print("CSV file 'output.csv' successfully created!")
+print(f"CSV file created: {output_path}")
 
 # ---------------------------
 # Figure 1: y-values (all numerical steps + y_actual separately)

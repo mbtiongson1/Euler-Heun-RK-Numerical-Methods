@@ -1,5 +1,5 @@
-from ivpsystems import f, g, t0, x0, y0, h, tn, x_actual, y_actual
-from utils import print_table
+from numerical_methods.problems.ivpshooting import f, g, h, t0, tn, x0, x_actual, y0, y_actual
+from numerical_methods.utils import print_table
 
 t = t0
 xc = x0
@@ -56,13 +56,13 @@ for n in range(1, num_steps + 1):
 
 print("Heun's Method for System of IVPs")
 print_table(
-    ["n", "t", "xp (predictor)", "yp (predictor)", "xc (corrected)", "yc (corrected)"],
+    ["n", "x", "yp (predictor)", "zp (predictor)", "yc (corrected)", "zc (corrected)"],
     rows
 )
 
 if has_actual:
     print("\nHeun Accuracy Table")
     print_table(
-        ["n", "t", "x (approx)", "y (actual)", "x error", "y error"],
+        ["n", "t", "y", "z", "y error", "z error"],
         error_rows
     )

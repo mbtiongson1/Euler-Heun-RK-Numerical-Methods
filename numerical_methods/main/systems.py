@@ -1,7 +1,8 @@
 import csv
 
-from ivpsystems import f, g, t0, x0, y0, h, tn, x_actual, y_actual
-from utils import print_table, print_table_csv
+from numerical_methods.paths import csv_path
+from numerical_methods.problems.ivpsystems import f, g, h, t0, tn, x0, x_actual, y0, y_actual
+from numerical_methods.utils import print_table, print_table_csv
 
 try:
     import matplotlib.pyplot as plt
@@ -192,17 +193,17 @@ if has_actual:
     print_table(headers_y, rows_y)
     print_table_csv(headers_y, rows_y)
 
-    with open("output_systems_x.csv", mode="w", newline="") as fx:
+    with open(csv_path("output_systems_x.csv"), mode="w", newline="") as fx:
         writer = csv.writer(fx)
         writer.writerow(headers_x)
         writer.writerows(rows_x)
 
-    with open("output_systems_y.csv", mode="w", newline="") as fy:
+    with open(csv_path("output_systems_y.csv"), mode="w", newline="") as fy:
         writer = csv.writer(fy)
         writer.writerow(headers_y)
         writer.writerows(rows_y)
 
-    print("\nCSV files 'output_systems_x.csv' and 'output_systems_y.csv' successfully created!")
+    print("\nCSV files created in out/csv/: output_systems_x.csv, output_systems_y.csv")
 else:
     headers = ["n", "t"]
     for m in active_methods:

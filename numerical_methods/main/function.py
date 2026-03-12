@@ -1,11 +1,12 @@
 """Build Vandermonde, Lagrange, and Least-Squares polynomial approximations."""
 
-from FD import compute_euler, compute_heun, compute_rk22, compute_rk4
-from vandermonde import build_vandermonde, solve_vandermonde
-from lagrange import solve_lagrange
-from leastsquares import solve_least_squares
-from ivp import method, p, xn, x0, y_actual, ls_methods
-from utils import plot_polynomial, plot_polynomials_compare
+from numerical_methods.fd.FD import compute_euler, compute_heun, compute_rk22, compute_rk4
+from numerical_methods.fitting.lagrange import solve_lagrange
+from numerical_methods.fitting.leastsquares import solve_least_squares
+from numerical_methods.fitting.vandermonde import build_vandermonde, solve_vandermonde
+from numerical_methods.paths import csv_path
+from numerical_methods.problems.ivp import ls_methods, method, p, x0, xn, y_actual
+from numerical_methods.utils import plot_polynomial, plot_polynomials_compare
 
 
 METHOD_COMPUTE_MAP = {
@@ -261,12 +262,13 @@ def _export_to_csv(
     ls_methods,
     ls_error_tables,
 ):
-    """Export Vandermonde, Lagrange, and Least-Squares results to output.csv."""
+    """Export Vandermonde, Lagrange, and Least-Squares results to out/csv/output_fit.csv."""
     import csv
 
     V_values = [[val[1] for val in row] for row in V]
 
-    with open("output.csv", "w", newline="") as f:
+    out_path = csv_path("output_fit.csv")
+    with open(out_path, "w", newline="") as f:
         writer = csv.writer(f)
 
         writer.writerow(["VANDERMONDE, LAGRANGE, AND LEAST-SQUARES APPROXIMATION"])
@@ -356,7 +358,7 @@ def _export_to_csv(
     print("\n" + "=" * 60)
     print("EXPORT COMPLETE")
     print("=" * 60)
-    print("Results exported to output.csv")
+    print(f"Results exported to {out_path}")
 
 
 if __name__ == "__main__":

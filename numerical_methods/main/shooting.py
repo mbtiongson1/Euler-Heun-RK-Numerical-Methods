@@ -1,7 +1,18 @@
 import csv
 
-from ivpshooting import f, g, t0 as x0, x0 as y0, y0 as z0, h, tn as xn, x_actual as y_actual, y_actual as z_actual
-from utils import print_table, print_table_csv
+from numerical_methods.paths import csv_path
+from numerical_methods.problems.ivpshooting import (
+    f,
+    g,
+    h,
+    t0 as x0,
+    tn as xn,
+    x0 as y0,
+    x_actual as y_actual,
+    y0 as z0,
+    y_actual as z_actual,
+)
+from numerical_methods.utils import print_table, print_table_csv
 
 try:
     import matplotlib.pyplot as plt
@@ -192,17 +203,17 @@ if has_actual:
     print_table(headers_z, rows_z)
     print_table_csv(headers_z, rows_z)
 
-    with open("output_systems_y.csv", mode="w", newline="") as fy:
+    with open(csv_path("output_systems_y.csv"), mode="w", newline="") as fy:
         writer = csv.writer(fy)
         writer.writerow(headers_y)
         writer.writerows(rows_y)
 
-    with open("output_systems_z.csv", mode="w", newline="") as fz:
+    with open(csv_path("output_systems_z.csv"), mode="w", newline="") as fz:
         writer = csv.writer(fz)
         writer.writerow(headers_z)
         writer.writerows(rows_z)
 
-    print("\nCSV files 'output_systems_y.csv' and 'output_systems_z.csv' successfully created!")
+    print("\nCSV files created in out/csv/: output_systems_y.csv, output_systems_z.csv")
 else:
     headers = ["n", "x"]
     for m in active_methods:

@@ -1,6 +1,6 @@
 # euler.py
 
-from ivp import (
+from numerical_methods.problems.ivp import (
     f, x0, y0, xn,
     generate_actual_solution,
     y_actual_func

@@ -35,26 +35,20 @@ This project implements:
 ## Project Structure
 
 ```
-├── ivp.py                  # Single-IVP configuration
-├── ivpsystems.py           # System-IVP configuration
-├── euler.py                # Euler method (single IVP)
-├── heun.py                 # Heun method (single IVP)
-├── rk22.py                 # RK2.2 / Ralston (single IVP)
-├── rk3.py                  # RK3 (single IVP)
-├── rk4.py                  # RK4 (single IVP)
-├── heunsystems.py          # Heun method (system IVP)
-├── rk4systems.py           # RK4 method (system IVP)
-├── mainsolver.py           # Multi-method single-IVP comparison
-├── mainsystems.py          # Multi-method system-IVP comparison
-├── FD.py                   # Finite difference calculations
-├── vandermonde.py          # Vandermonde polynomial fitting
-├── vandermonde_manual.py   # Manual Vandermonde workflow
-├── lagrange.py             # Lagrange interpolation
-├── leastsquares.py         # Least-squares solver
-├── function.py             # Combined fitting workflow for single IVP
-├── utils.py                # Utility functions (tables, plotting)
-├── test.py                 # Consistency/comparison testing
-└── README.md               # This file
+├── numerical_methods/              # Canonical Python package (import from here)
+│   ├── problems/                   # Edit configs here (single IVP, systems, shooting, etc.)
+│   ├── methods/                    # Individual method scripts (Euler/Heun/RK...)
+│   ├── main/                       # Main drivers (solver/systems/shooting/function)
+│   ├── fitting/                    # Vandermonde/Lagrange/least-squares modules
+│   ├── fd/                         # Finite-difference workflows
+│   ├── experiments/                # Scratch/analysis scripts
+│   ├── utils.py
+│   ├── matrix.py
+│   └── paths.py                    # out/ path helpers
+├── docs/
+│   └── index.html
+├── out/                            # generated outputs (ignored by git)
+└── README.md
 ```
 
 ---
@@ -63,48 +57,44 @@ This project implements:
 
 ### 1. Configure Your Problem
 
-- Use `ivp.py` for single ODEs: `y' = f(x, y)`
-- Use `ivpsystems.py` for systems:
+- Use `numerical_methods/problems/ivp.py` for single ODEs: `y' = f(x, y)`
+- Use `numerical_methods/problems/ivpsystems.py` for systems:
   - `x' = f(x, y, t)`
   - `y' = g(x, y, t)`
 
 ### 2. Select Method(s)
 
-- In `ivp.py`, set:
+- In `numerical_methods/problems/ivp.py`, set:
   - `method = 'euler' | 'heun' | 'rk22' | 'rk3' | 'rk4'`
   - `ls_methods = [...]` for least-squares comparisons
-- In `ivpsystems.py`, set:
+- In `numerical_methods/problems/ivpsystems.py`, set:
   - `method = 'heun' | 'rk4'` (for system-focused scripts)
-- In `mainsystems.py`, use:
+- In `numerical_methods/main/systems.py`, use:
   - `active_methods = ['euler', 'heun', 'ral', 'rk3', 'rk4']` (any subset)
 
 ### 3. Run a Driver
 
 ```bash
-# Single-IVP fitting workflow (Vandermonde, Lagrange, least-squares)
-python function.py
-
-# Single-IVP multi-method comparison table/plots
-python mainsolver.py
-
-# System-IVP multi-method comparison table/plots
-python mainsystems.py
-
-# Finite-difference workflow
-python FD.py
+# Preferred (module runs)
+python -m numerical_methods.main.function
+python -m numerical_methods.main.solver
+python -m numerical_methods.main.systems
+python -m numerical_methods.fd.FD
 ```
 
 ### 4. Run Individual Methods
 
 ```bash
-python euler.py
-python heun.py
-python rk22.py
-python rk3.py
-python rk4.py
-python heunsystems.py
-python rk4systems.py
+python -m numerical_methods.methods.euler
+python -m numerical_methods.methods.heun
+python -m numerical_methods.methods.rk22
+python -m numerical_methods.methods.rk3
+python -m numerical_methods.methods.rk4
+python -m numerical_methods.methods.heunsystems
+python -m numerical_methods.methods.rk4systems
 ```
+
+Outputs that are written to disk (CSVs) are written under `out/csv/`.
 
 ---
 
@@ -168,7 +158,7 @@ y' = g(x, y, t)
 Implemented system solvers:
 - Heun predictor-corrector (`heunsystems.py`)
 - RK4 (`rk4systems.py`)
-- Combined comparison with tables and plots (`mainsystems.py`)
+- Combined comparison with tables and plots (`numerical_methods/main/systems.py`)
 
 ---
 
@@ -234,7 +224,7 @@ Implemented formulas include:
 
 ## Configuration
 
-### Single IVP (`ivp.py`)
+### Single IVP (`numerical_methods/problems/ivp.py`)
 
 ```python
 import math
@@ -259,7 +249,7 @@ ls_methods = ['euler', 'heun']
 y_actual = None                      # or list of values, or generated values
 ```
 
-### System IVP (`ivpsystems.py`)
+### System IVP (`numerical_methods/problems/ivpsystems.py`)
 
 ```python
 import math
@@ -291,21 +281,25 @@ x_actual, y_actual = None, None      # or generated/manual lists
 
 ## Main Orchestrators
 
-### `function.py`
+### `numerical_methods/main/function.py`
 
 Single-IVP end-to-end workflow:
 1. Compute numerical solution for `method`
 2. Build Vandermonde and Lagrange polynomials
 3. Run least-squares across `ls_methods`
-4. Plot and export results to `output.csv`
+4. Plot and export results to `out/csv/output_fit.csv`
 
-### `mainsolver.py`
+### `numerical_methods/main/solver.py`
 
 Compares single-IVP methods in one run and can compute errors when `y_actual` is provided.
 
-### `mainsystems.py`
+### `numerical_methods/main/systems.py`
 
 Compares selected system-IVP methods (`active_methods`) with optional actual-solution overlays and error plots.
+
+### `numerical_methods/main/shooting.py`
+
+Compares selected shooting-problem methods (`active_methods`) with optional actual-solution overlays and error plots.
 
 ---
 
@@ -324,8 +318,11 @@ python test.py
 ## CSV Export
 
 Generated files may include:
-- `output.csv` (single-IVP fitting/comparison data)
-- `output_systems_x.csv` and `output_systems_y.csv` (system-IVP comparison tables)
+- `out/csv/output.csv` (single-IVP multi-method comparison)
+- `out/csv/output_fit.csv` (fitting workflow export)
+- `out/csv/output_systems_x.csv` and `out/csv/output_systems_y.csv` (system-IVP comparison tables)
+- `out/csv/output_systems_z.csv` (shooting workflow table, if produced)
+- `out/csv/FD.csv` (finite difference table)
 
 ---
 
@@ -337,13 +334,15 @@ Helper functions include:
 - `plot_polynomial(...)`
 - `plot_polynomials_compare(...)`
 
+Utilities live at `numerical_methods/utils.py` and are imported as `numerical_methods.utils`.
+
 ---
 
 ## Example Usage
 
 ### Single IVP Example
 
-1. Set in `ivp.py`:
+1. Set in `numerical_methods/problems/ivp.py`:
 
 ```python
 def f(x, y):
@@ -359,12 +358,12 @@ y_actual = None
 2. Run:
 
 ```bash
-python mainsolver.py
+python -m numerical_methods.main.solver
 ```
 
 ### System IVP Example
 
-1. Set in `ivpsystems.py`:
+1. Set in `numerical_methods/problems/ivpsystems.py`:
 
 ```python
 def f(x, y, t):
@@ -382,7 +381,7 @@ tn = 1
 2. Run:
 
 ```bash
-python mainsystems.py
+python -m numerical_methods.main.systems
 ```
 
 ---

@@ -1,8 +1,8 @@
 """Manual-point Vandermonde polynomial fit and plot against y_actual."""
 
-from ivp import x0, xn, y_actual
-from utils import plot_polynomial
-from vandermonde import build_vandermonde, solve_vandermonde
+from numerical_methods.fitting.vandermonde import build_vandermonde, solve_vandermonde
+from numerical_methods.problems.ivp import x0, xn, y_actual
+from numerical_methods.utils import plot_polynomial
 
 
 if __name__ == '__main__':
