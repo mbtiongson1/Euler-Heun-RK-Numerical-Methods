@@ -1,7 +1,7 @@
 # Repo Architecture Context
 
 This repository is organized as an importable Python package, with optional wrapper scripts under `root/`.
-
+ 
 ## High-Level Layout
 
 - `numerical_methods/`: Canonical source code (import from here).
