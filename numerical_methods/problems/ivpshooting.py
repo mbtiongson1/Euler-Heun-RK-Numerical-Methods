@@ -8,7 +8,7 @@ def f(y, z, x):  # z=y' define this!
    return z
 
 def g(y, z, x):  # z'=y'' define this!
-    return - 2 + 2*(z/x)
+    return -2 + 2*(z/x)
 
 
 # Initial conditions if x,y,t
@@ -32,16 +32,19 @@ def linearize(gamma1, gamma2, g1, g2, beta):
         print('new gamma = ',gamma3)
         return gamma3
 #Trial 1
-gamma1 = 1
-g1 = 0.522574 #from results
+gamma1 = 30
+g1 = 29.522574 #from results
 #Trial 2
 gamma2 = 9
 g2 = 8.522574 #from results
 #Trial 3
-gamma3 = linearize(gamma1, gamma2, g1, g2, beta)
-g3 = 0.436934
+gamma3 = linearize(gamma1, gamma2, g1, g2, beta) #3.4774259999999995
+g3 = 23.496756750000003
 
-y0 = gamma3 #edit this per trial
+# gamma4 = linearize(gamma3, gamma2, g3, g2, beta) #11.036760475991652
+# g4 = 0
+
+y0 = gamma1 #edit this per trial
 # gamma3 = 3.4774259999999995
 
 

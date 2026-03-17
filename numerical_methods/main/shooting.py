@@ -22,7 +22,7 @@ except Exception:
 
 # Choose any subset from: euler, heun, ral, rk3, rk4
 # active_methods = ['euler', 'heun', 'ral', 'rk3', 'rk4']
-active_methods = ['rk4']
+active_methods = ['heun']
 # ---------------------------
 # Time grid
 # ---------------------------
