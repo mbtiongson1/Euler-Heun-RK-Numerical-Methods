@@ -34,21 +34,22 @@ right_bc = {"type": "dirichlet", "value": 0.0}
 
 # Mesh controls.
 # mesh_mode choices:
-#   "m"        -> h_used = base_h / (2 ** m)
-#   "h"        -> use explicit h
-#   "elements" -> use explicit num_elements
-#   "manual"   -> use manual_nodes exactly
+#   "m"        -> h_used = base_h / (2 ** m)            / m-refinement
+#   "h"        -> use explicit h                        / h-refinement
+#   "elements" -> use explicit num_elements             / n-refinement
+#   "manual"   -> use manual_nodes exactly              
 mesh_mode = "elements"
-base_h = 0.25
-m = 0
-h = 0.25
-num_elements = 4
-manual_nodes = None
+base_h = 0.25           #                               / m-refinement base
+m = 0                   # override only if "m"          / m-refinement
+h = 0.25                # override only if "h"          / h-refinement
+num_elements = 8        # override only if "elements"   / n-refinement
+manual_nodes = None     # override only if "manual"
+
 
 
 # Solver/output controls
 quadrature_order = 2
-print_level = "stage"  # "stage", "verbose", or "final"
+print_level = "verbose"  # "stage", "verbose", or "final"
 export_csv = True
 plot_result = True
 
